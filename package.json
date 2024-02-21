@@ -1,0 +1,26 @@
+{
+  "name": "masters-rpa",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/niteshc132/masters-rpa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/niteshc132/masters-rpa/issues"
+  },
+  "homepage": "https://github.com/niteshc132/masters-rpa#readme",
+  "dependencies": {
+    "playwright": "^1.41.2",
+    "puppeteer": "^22.1.0"
+  }
+}
