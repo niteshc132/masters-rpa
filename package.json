@@ -20,7 +20,6 @@
   },
   "homepage": "https://github.com/niteshc132/masters-rpa#readme",
   "dependencies": {
-    "playwright": "^1.41.2",
-    "puppeteer": "^22.1.0"
+    "playwright": "^1.41.2"
   }
 }

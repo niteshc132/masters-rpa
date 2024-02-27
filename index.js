@@ -1,6 +1,7 @@
 import { chromium } from "playwright";
-
+import { getUserCredentials } from "./getCreds.js";
 (async () => {
+  const { email, password } = await getUserCredentials();
   const browser = await chromium.launch({
     headless: false,
     viewport: {
@@ -20,8 +21,8 @@ import { chromium } from "playwright";
   if (page.url().includes("/v2/Account/LogOn")) {
     // Log in
     await page.waitForSelector("#username");
-    await page.type("#username", "nitesh@cubdigital.co.nz");
-    await page.type("#password", "");
+    await page.type("#username", email);
+    await page.type("#password", password);
     await page.click("#btnLogOn");
     await page.waitForNavigation();
     await page.click("button.centerAligned.buttonLink");
@@ -76,7 +77,10 @@ import { chromium } from "playwright";
       const productCode = await productCell.textContent();
 
       console.log("productCode", productCode);
+      const productDescCell = await page.$(`#${rowId} > td:nth-child(2)`);
+      const productDesc = await productDescCell.textContent();
 
+      console.log("productDesc", productDesc);
       const batchCell = await page.$(`#${rowId} > td:nth-child(5)`);
       const batchNumber = await batchCell.textContent();
 
@@ -92,40 +96,59 @@ import { chromium } from "playwright";
 
       await editCell.click({ timeout: 20000 });
       console.log("finding INPUTTING");
-      await page.waitForSelector(
-        '.add-batch-form input[ng-model="productBatch.batchNumber"] >> visible=true'
-      );
-      console.log(" INPUTTING batch");
+      if (qtyNumber < 0) {
+        console.log("ITS A RAW DAWG");
+        const x = await page.waitForSelector(".batch-filter >> visible=true");
+        console.log(x);
+        await page.locator(".batch-filter >> visible=true").fill(batchNumber);
 
-      await page
-        .locator(
+        await page.waitForSelector(".ngRow.even.selected");
+
+        // Once the row is found, locate the input element within it
+        // const selectElement = await page.$(
+        //   '.ngRow.even.selected input[type="text"]>>visible=true'
+        // );
+        // await page
+        //   .locator(`.ngRow.even.selected input[type="text"]>>visible=true`)
+        //   .fill(qtyNumber);
+        await page.click("#saveButtonDiv .fm-button.green>>visible=true");
+        return;
+      } else {
+        await page.waitForSelector(
           '.add-batch-form input[ng-model="productBatch.batchNumber"] >> visible=true'
-        )
-        .fill(batchNumber);
+        );
+        console.log(" INPUTTING batch");
 
-      console.log(" finding INPUTTING qty");
+        await page
+          .locator(
+            '.add-batch-form input[ng-model="productBatch.batchNumber"] >> visible=true'
+          )
+          .fill(batchNumber);
 
-      await page.waitForSelector(
-        '.add-batch-form input[ng-model="productBatch.selectedQuantity"] >> visible=true'
-      );
-      console.log(" INPUTTING batch");
+        console.log(" finding INPUTTING qty");
 
-      await page
-        .locator(
+        await page.waitForSelector(
           '.add-batch-form input[ng-model="productBatch.selectedQuantity"] >> visible=true'
-        )
-        .fill(qtyNumber);
+        );
+        console.log(" INPUTTING batch");
 
-      console.log("clicking addBatch");
+        await page
+          .locator(
+            '.add-batch-form input[ng-model="productBatch.selectedQuantity"] >> visible=true'
+          )
+          .fill(qtyNumber);
 
-      //   const addBatch = await page.waitForSelector("text=Add Batch");
-      await page.click(".editor-field.add-batch .fm-button>>visible=true");
-      //   await addBatch.click();
-      console.log("clicking save");
+        console.log("clicking addBatch");
 
-      //   const saveButton = await page.waitForSelector("text=Save");
-      await page.click("#saveButtonDiv .fm-button.green>>visible=true");
-      //   await saveButton.click();
+        //   const addBatch = await page.waitForSelector("text=Add Batch");
+        await page.click(".editor-field.add-batch .fm-button>>visible=true");
+        //   await addBatch.click();
+        console.log("clicking save");
+
+        //   const saveButton = await page.waitForSelector("text=Save");
+        await page.click("#saveButtonDiv .fm-button.green>>visible=true");
+        //   await saveButton.click();
+      }
     }
   }
 
